@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import List, Optional, Union
 
+from .depute import Depute
 
 
 @dataclass(frozen=True, eq=False)
-class Scrutin:
+class Amendement:
     id: int
     name: str
     url: str
-    text_url: str
     date: str
-    adopted: bool
-    vote_for: int
-    vote_against: int
-    vote_abstention: int
+    status: str
+    proposed_by: Union[List[Depute], str]
+    summary: Optional[str]
 
     # analyse: ScrutinAnalyse

@@ -1,0 +1,49 @@
+name: auto_update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */1 * * *" # every 1 hours
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+permissions:
+  contents: write
+
+jobs:
+  data_update:
+    name: Data update
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: Gr1N/setup-poetry@v9
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-root --without dev
+
+      - name: Run update
+        run: poetry run python -m src --legislature 17
+
+      - name: Git configuration
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Push changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -a -m "Data auto update"
+            git push
+          fi

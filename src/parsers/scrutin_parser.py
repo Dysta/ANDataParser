@@ -2,24 +2,21 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from dataclasses import dataclass, field
+from math import inf
 from typing import TYPE_CHECKING
 
-import dateparser
 import requests
 from bs4 import BeautifulSoup
+from cattr import unstructure
 from loguru import logger
 
-from src.models import Scrutin, ScrutinAnalyse
+import src.helpers as helpers
+from src.models import Scrutin
 
 if TYPE_CHECKING:
     from typing import List, Tuple
 
-DATE_REGX = re.compile(
-    r"(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche) (\d{1,2})(er)? [a-zéû]+ \d{4}",  # ? should match Lundi 17 mars 2022 in scrutin title
-    re.IGNORECASE,
-)
 
 BASE_URL: str = "https://www.assemblee-nationale.fr/dyn"
 
@@ -27,13 +24,15 @@ BASE_URL: str = "https://www.assemblee-nationale.fr/dyn"
 @dataclass(eq=False, init=False)
 class ScrutinParser:
     scrutins: List[Scrutin] = field(default_factory=list)
+    max_page: int = inf
     total_page: int = 0
     save_data_target: str = "data/dyn/%d/scrutins.json"
 
     legislature: int
 
-    def __init__(self, legislature: int):
+    def __init__(self, legislature: int, max_page: int = inf):
         self.legislature = legislature
+        self.max_page = max_page
         self.save_data_target = self.save_data_target % self.legislature
 
     def _fetch_page(self, an_url: str) -> BeautifulSoup:
@@ -43,20 +42,6 @@ class ScrutinParser:
             raise Exception(f"Failed to fetch page {an_url}")
 
         return BeautifulSoup(resp.text, "html.parser")
-
-    def _parse_date(self, date: str) -> str:
-        """Transform a string "Lundi 16 janvier 2025 into a datetime object"""
-        date_match = re.search(
-            DATE_REGX,
-            date,
-        )
-        if not date_match:
-            # ? some scrutins doesn't have date in the title
-            logger.warning(f"No date found for scrutin {date}")
-            return ""
-
-        group = date_match.group(0).capitalize()
-        return dateparser.parse(group, languages=["fr"]).strftime("%Y-%m-%d")
 
     def _parse_vote(self, div: BeautifulSoup, title: str) -> Tuple[int, int, int]:
         # ? we try to find the normal div where there is 3 results (for, against, abstention)
@@ -109,7 +94,7 @@ class ScrutinParser:
     def save_json(self):
         data = {
             "total": len(self.scrutins),
-            "scrutins": [scrutin.__dict__ for scrutin in self.scrutins],
+            "scrutins": [unstructure(scrutin) for scrutin in self.scrutins],
         }
 
         os.makedirs(os.path.dirname(self.save_data_target), exist_ok=True)
@@ -124,7 +109,9 @@ class ScrutinParser:
         if self.total_page == 0:
             self._parse_total_pages(an_url)
 
-        for page in range(1, self.total_page + 1):
+        limit: int = min(self.max_page, self.total_page)
+
+        for page in range(1, limit + 1):
             soup = self._fetch_page(an_url + f"&page={page}")
             scrutin_divs = soup.find_all("div", class_="an-bloc _style-scrutin")
 
@@ -138,7 +125,7 @@ class ScrutinParser:
                     id = int(url.split("/")[-1])  # ? id is the last part of the url
 
                     date = div.find("span", class_="h6 _colored-primary").get_text(strip=True)
-                    date = self._parse_date(date)
+                    date = helpers.parse_date(date)
 
                     adopted = True if div.find("span", class_="_colored-green _bold") else False
 
