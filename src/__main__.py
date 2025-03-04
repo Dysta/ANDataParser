@@ -60,8 +60,8 @@ def main():
     dyn.save_json()
     logger.success(f"done, parsed {len(dyn.scrutins)} scrutins")
 
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #     executor.map(process_scrutin, dyn.scrutins)
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        executor.map(process_scrutin, dyn.scrutins)
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.map(process_amendement, dyn.scrutins)
