@@ -19,7 +19,7 @@ BASE_URL: str = "https://www.assemblee-nationale.fr"
 class AmendementParser:
     amendement: Amendement
     am_url: str
-    save_data_target: str = "data/%s.json"
+    save_data_target: str = "data%s.json"
 
     def __init__(self, am_url: str):
         self.am_url = am_url
@@ -53,14 +53,7 @@ class AmendementParser:
             proposed_by = []
             for li in proposed_by_li:
                 name = li.find("span").get_text(strip=True)  # ? le nom est dans le span
-                splited_name = name.split(" ")  # ? we split to remove the gender prefix
-                # ? we remove the gender prefix
-                splited_name = splited_name[1:]
-                # ? some depute have a composed name like Marc de Fleurian
-                # ? so we take the first entry as first name
-                first_name = splited_name[0]
-                # ? and the rest as last name
-                last_name = " ".join(splited_name[1:])
+                first_name, last_name = helpers.parse_name(name)
 
                 # ? each depute has a data-nom div set to their full name
                 # ? the party is in the data-gp attribute

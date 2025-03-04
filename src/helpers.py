@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Tuple
 
 import dateparser
 from loguru import logger
@@ -24,3 +25,16 @@ def parse_date(date: str) -> str:
 
     group = date_match.group(0).capitalize()
     return dateparser.parse(group, languages=["fr"]).strftime("%Y-%m-%d")
+
+
+def parse_name(name: str) -> Tuple[str, str]:
+    splited_name = name.split(" ")  # ? we split to remove the gender prefix
+    # ? we remove the gender prefix
+    splited_name = splited_name[1:]
+    # ? some depute have a composed name like Marc de Fleurian
+    # ? so we take the first entry as first name
+    first_name = splited_name[0]
+    # ? and the rest as last name
+    last_name = " ".join(splited_name[1:])
+
+    return first_name, last_name

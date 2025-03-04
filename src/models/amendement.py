@@ -15,5 +15,3 @@ class Amendement:
     status: str
     proposed_by: Union[List[Depute], str]
     summary: Optional[str]
-
-    # analyse: ScrutinAnalyse
