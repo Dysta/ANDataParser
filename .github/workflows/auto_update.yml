@@ -42,9 +42,10 @@ jobs:
       - name: Push changes
         run: |
           git add -A
+          git commit -m "Data auto update"
+          git push
           if git diff --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Data auto update"
-            git push
+            echo "Changes committed."
           fi
