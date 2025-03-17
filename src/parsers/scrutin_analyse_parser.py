@@ -19,7 +19,7 @@ BASE_URL: str = "https://www.assemblee-nationale.fr"
 class ScrutinAnalyseParser:
     scrutin_analyse: ScrutinAnalyse
     scrutin_url: str
-    save_data_target: str = "data%s.json"
+    save_data_target: str = "./data%s.json"
 
     def __init__(self, am_url: str):
         self.scrutin_url = am_url

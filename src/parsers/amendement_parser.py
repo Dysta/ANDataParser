@@ -19,7 +19,7 @@ BASE_URL: str = "https://www.assemblee-nationale.fr"
 class AmendementParser:
     amendement: Amendement
     am_url: str
-    save_data_target: str = "data%s.json"
+    save_data_target: str = "./data%s.json"
 
     def __init__(self, am_url: str):
         self.am_url = am_url
