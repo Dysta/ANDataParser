@@ -27,26 +27,26 @@ def process_amendement(scrutin: Scrutin):
         except Exception as e:
             logger.error(f"Failed to fetch amendement {scrutin.text_url}: {e}")
 
-        logger.debug(f"Amendement traité : {save_path}")
+        logger.success(f"Amendement traité : {save_path}")
 
 
 def process_scrutin(scrutin: Scrutin):
     # ? Vérifie si l'amendement existe déjà, sinon le parse et le sauvegarde.
-    if scrutin.text_url and "dossier" not in scrutin.text_url:
+    if scrutin.url:
         parser = ScrutinAnalyseParser(scrutin.url)
         save_path = parser.save_data_target
 
         if os.path.exists(save_path):
-            logger.info(f"Amendement déjà parsé : {save_path}")
+            logger.info(f"scrutin déjà parsé : {save_path}")
             return
 
         try:
             parser.fetch_scrutin_analyse_data()
             parser.save_json()
         except Exception as e:
-            logger.error(f"Failed to fetch amendement {scrutin.text_url}: {e}")
+            logger.error(f"Failed to fetch scrutin {scrutin.url}: {e}")
 
-        logger.debug(f"Scrutin traité : {save_path}")
+        logger.success(f"Scrutin traité : {save_path}")
 
 
 def main():
