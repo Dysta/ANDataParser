@@ -4,7 +4,7 @@ An open source repository that scrappe and parse scrutins and law text from fren
 ## How to use
 Think this repository as an api. \
 `BASE_URL=https://raw.githubusercontent.com/Dysta/ANDataParser/refs/heads/main/` 
-or to the official french national assembly :\
+or to the official french national assembly : \
 `BASE_URL=https://www.assemblee-nationale.fr/dyn/17/`
 
 ## Data
