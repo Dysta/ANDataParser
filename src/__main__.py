@@ -31,7 +31,7 @@ def process_amendement(scrutin: Scrutin):
 
 
 def process_scrutin(scrutin: Scrutin):
-    # ? Vérifie si l'amendement existe déjà, sinon le parse et le sauvegarde.
+    # ? Vérifie si le scrutin existe déjà, sinon le parse et le sauvegarde.
     if scrutin.url:
         parser = ScrutinAnalyseParser(scrutin.url)
         save_path = parser.save_data_target

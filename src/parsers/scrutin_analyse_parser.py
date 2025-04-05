@@ -8,6 +8,9 @@ import requests
 from bs4 import BeautifulSoup
 from cattr import unstructure
 from loguru import logger
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 import src.helpers as helpers
 from src.models import Depute, ScrutinAnalyse
@@ -34,6 +37,31 @@ class ScrutinAnalyseParser:
 
         return BeautifulSoup(resp.text, "html.parser")
 
+    def _extract_visualiser(self, visualiser_url: str) -> str:
+        vizu_url = BASE_URL + visualiser_url
+
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--incognito")
+
+        driver = webdriver.Chrome(options=options)
+        driver.set_window_size(800, 800)
+
+        driver.get(vizu_url)
+        driver.implicitly_wait(3)
+
+        driver.execute_script(f"window.scrollTo(0, 335);")
+
+        vizu = driver.find_element(By.CSS_SELECTOR, ".hemicycle-carte-svg")
+        b64 = vizu.screenshot_as_base64
+
+        driver.quit()
+
+        return b64
+
     def fetch_scrutin_analyse_data(self) -> None:
         page = self._fetch_page(self.scrutin_url)
         repartition = page.find("div", class_="ha-grid-item _size-3")
@@ -48,6 +76,9 @@ class ScrutinAnalyseParser:
         adopted = True if page.find("span", class_="_colored-green _bold") else False
 
         vote_for = vote_against = vote_abstention = vote_absent = []
+
+        visualizer_url = page.find("div", attrs={"data-targetembedid": "embedHemicycle"}).get("data-content")
+        b64_vizualiser = self._extract_visualiser(visualizer_url)
 
         for group in groups:
             group_name: str = group.get("id").replace("groupe", "")
@@ -81,6 +112,7 @@ class ScrutinAnalyseParser:
             date=date,
             title=title,
             adopted=adopted,
+            visualizer=b64_vizualiser,
             vote_for=vote_for,
             vote_against=vote_against,
             vote_abstention=vote_abstention,
@@ -93,6 +125,7 @@ class ScrutinAnalyseParser:
             "date": self.scrutin_analyse.date,
             "title": self.scrutin_analyse.title,
             "adopted": self.scrutin_analyse.adopted,
+            "visualizer": self.scrutin_analyse.visualizer,
             "vote_for": [unstructure(d) for d in self.scrutin_analyse.vote_for],
             "vote_against": [unstructure(d) for d in self.scrutin_analyse.vote_against],
             "vote_abstention": [unstructure(d) for d in self.scrutin_analyse.vote_abstention],

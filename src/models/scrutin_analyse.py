@@ -15,6 +15,7 @@ class ScrutinAnalyse:
     date: str
     title: str
     adopted: bool
+    visualizer: str
     vote_for: List[Depute]
     vote_against: List[Depute]
     vote_abstention: List[Depute]
