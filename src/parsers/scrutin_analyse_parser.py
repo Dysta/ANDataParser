@@ -77,8 +77,11 @@ class ScrutinAnalyseParser:
 
         vote_for = vote_against = vote_abstention = vote_absent = []
 
-        visualizer_url = page.find("div", attrs={"data-targetembedid": "embedHemicycle"}).get("data-content")
-        b64_vizualiser = self._extract_visualiser(visualizer_url)
+        visualizer_url = page.find("div", attrs={"data-targetembedid": "embedHemicycle"})
+        b64_vizualiser = ""
+        if visualizer_url:  # ? some scrutins don't have a visualizer
+            url = visualizer_url.get("data-content")
+            b64_vizualiser = self._extract_visualiser(url)
 
         for group in groups:
             group_name: str = group.get("id").replace("groupe", "")
