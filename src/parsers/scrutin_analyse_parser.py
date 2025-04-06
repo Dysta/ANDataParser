@@ -75,7 +75,10 @@ class ScrutinAnalyseParser:
         title = infos_div.find("p").get_text(strip=True)
         adopted = True if page.find("span", class_="_colored-green _bold") else False
 
-        vote_for = vote_against = vote_abstention = vote_absent = []
+        vote_for = []
+        vote_against = []
+        vote_abstention = []
+        vote_absent = []
 
         visualizer_url = page.find("div", attrs={"data-targetembedid": "embedHemicycle"})
         b64_vizualiser = ""
