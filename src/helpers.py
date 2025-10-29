@@ -13,7 +13,7 @@ DATE_REGX = re.compile(
 
 
 def parse_date(date: str) -> str:
-    """Transform a string "Lundi 16 janvier 2025 into a datetime object"""
+    """Transform a string "Lundi 16 janvier 2025" into a datetime object"""
     date_match = re.search(
         DATE_REGX,
         date,
