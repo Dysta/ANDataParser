@@ -49,11 +49,11 @@ ENV PYENV_ROOT="${HOME}/.pyenv"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${HOME}/.local/bin:$PATH"
 
 RUN echo "done 0" \
-    && curl https://pyenv.run | bash \
+    && curl -ksS https://pyenv.run | bash \
     && echo "done 1" \
     && pyenv install ${PYTHON_VERSION} \
     && echo "done 2" \
     && pyenv global ${PYTHON_VERSION} \
     && echo "done 3" \
-    && curl -sSL https://install.python-poetry.org | python3 - \
+    && curl -ksSL https://install.python-poetry.org | python3 - \
     && poetry config virtualenvs.in-project true

@@ -13,7 +13,7 @@ DATE_REGX = re.compile(
 
 
 def parse_date(date: str) -> str:
-    """Transform a string "Lundi 16 janvier 2025 into a datetime object"""
+    """Transform a string "Lundi 16 janvier 2025" into a datetime object"""
     date_match = re.search(
         DATE_REGX,
         date,
@@ -29,7 +29,6 @@ def parse_date(date: str) -> str:
 
 def parse_name(name: str) -> Tuple[str, str]:
     splited_name = name.split(" ")  # ? we split to remove the gender prefix
-    # ? we remove the gender prefix
     splited_name = splited_name[1:]
     # ? some depute have a composed name like Marc de Fleurian
     # ? so we take the first entry as first name
