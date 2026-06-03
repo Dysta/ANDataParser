@@ -104,7 +104,7 @@ class ScrutinParser:
 
     def parse_scrutins(self):
         scrutins: List[Scrutin] = []
-        an_url: str = f"{BASE_URL}/{self.legislature}/scrutins?order=date,desc&limit=100"
+        an_url: str = f"{BASE_URL}/{self.legislature}/scrutins?order=date,desc&limit=50"
 
         if self.total_page == 0:
             self._parse_total_pages(an_url)
