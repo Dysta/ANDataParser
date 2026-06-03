@@ -19,6 +19,16 @@ if TYPE_CHECKING:
 
 
 BASE_URL: str = "https://www.assemblee-nationale.fr/dyn"
+_HEADERS: dict = {
+    "User-Agent": (
+        "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) "
+        "Gecko/20100101 Firefox/139.0"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "fr-FR,fr;q=0.8,en-US;q=0.5,en;q=0.3",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+}
 
 
 @dataclass(eq=False, init=False)
@@ -37,7 +47,7 @@ class ScrutinParser:
 
     def _fetch_page(self, an_url: str) -> BeautifulSoup:
         logger.debug(f"Fetch url {an_url}")
-        resp = requests.get(an_url)
+        resp = requests.get(an_url, headers=_HEADERS)
         if resp.status_code != 200:
             raise Exception(f"Failed to fetch page {an_url}")
 
