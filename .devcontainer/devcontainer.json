@@ -22,7 +22,7 @@
 				"ms-python.black-formatter",
 				"ms-python.isort",
 				"donjayamanne.python-extension-pack",
-				"Codeium.codeium"
+				"aaron-bond.better-comments"
 			]
             }
         }
